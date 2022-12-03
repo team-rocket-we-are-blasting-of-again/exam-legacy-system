@@ -17,5 +17,4 @@ COPY start.sh /start.sh
 EXPOSE 9085
 EXPOSE 9080
 
-ENTRYPOINT [ "bash", "-c" ]
-CMD [ "/start.sh" ]
+CMD [ "sh", "/start.sh" ]
