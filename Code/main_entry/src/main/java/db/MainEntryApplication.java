@@ -1,6 +1,7 @@
 package db;
 
 import db.connectors.DataConnectorImpl;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -18,6 +19,12 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootApplication(exclude =  {DataSourceAutoConfiguration.class })
 public class MainEntryApplication {
 
+    @Value("${redis.host}")
+    private String redisHost;
+
+    @Value("${redis.port}")
+    private Integer redisPort;
+
     public static void main(String[] args) {
         SpringApplication.run(MainEntryApplication.class, args);
     }
@@ -32,7 +39,7 @@ public class MainEntryApplication {
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration =
-                new RedisStandaloneConfiguration("host.docker.internal", 6379);
+                new RedisStandaloneConfiguration(redisHost, redisPort);
         return new JedisConnectionFactory(redisStandaloneConfiguration);
     }
 

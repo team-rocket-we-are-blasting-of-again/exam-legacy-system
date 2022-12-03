@@ -3,6 +3,7 @@ package db.connectors;
 import db.entities.*;
 import db.exceptions.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -20,10 +21,13 @@ import java.util.Set;
 @Component
 public class DataConnectorImpl implements DataConnector {
 
-    private final String DATA_SERVICE_URL = "http://host.docker.internal:9080/";
+    @Value("${data-service.url}")
+    private String dataServiceUrl;
+
     private final String RESTAURANT_SERVICE_URL = "http://host.docker.internal:8066/";
     private final String COURIER_SERVICE_URL = "http://host.docker.internal:8081/";
     private final String LOGGING_SERVICE_URL = "http://host.docker.internal:8042/";
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -32,7 +36,7 @@ public class DataConnectorImpl implements DataConnector {
     public Restaurant getRestaurantById(int id) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "restaurant?id=" + id);
+        URI uri = new URI(dataServiceUrl + "restaurant?id=" + id);
         ResponseEntity<Restaurant> result = restTemplate.getForEntity(uri, Restaurant.class);
         return result.getBody();
     }
@@ -45,7 +49,7 @@ public class DataConnectorImpl implements DataConnector {
         for (Integer i : ids) {
             requestParameter += i + ",";
         }
-        URI uri = new URI(DATA_SERVICE_URL + "restaurant/list" + requestParameter);
+        URI uri = new URI(dataServiceUrl + "restaurant/list" + requestParameter);
 
         ResponseEntity<Restaurant[]> response = restTemplate.getForEntity(uri, Restaurant[].class);
         if (response != null) {
@@ -59,7 +63,7 @@ public class DataConnectorImpl implements DataConnector {
     public Order postNewOrder(OrderRequest orderRequest) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "order");
+        URI uri = new URI(dataServiceUrl + "order");
         HttpEntity<OrderRequest> request =
                 new HttpEntity<>(orderRequest, headers);
         Order result = restTemplate.postForObject(uri, request, Order.class);
@@ -70,7 +74,7 @@ public class DataConnectorImpl implements DataConnector {
     public Order sendOrderWithCourier(OrderRequest orderRequest) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "order/deliver");
+        URI uri = new URI(dataServiceUrl + "order/deliver");
         HttpEntity<OrderRequest> request =
                 new HttpEntity(orderRequest, headers);
         Order result = restTemplate.postForObject(uri, request, Order.class);
@@ -82,7 +86,7 @@ public class DataConnectorImpl implements DataConnector {
     public List<Order> getOrdersForCourier(int id) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "order/courier?id="+id);
+        URI uri = new URI(dataServiceUrl + "order/courier?id="+id);
 
         ResponseEntity<Order[]> response = restTemplate.getForEntity(uri, Order[].class);
         if (response != null) {
@@ -96,7 +100,7 @@ public class DataConnectorImpl implements DataConnector {
     public List<Order> getOrdersForCustomer(int id) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "order/customer?id="+id);
+        URI uri = new URI(dataServiceUrl + "order/customer?id="+id);
 
         ResponseEntity<Order[]> response = restTemplate.getForEntity(uri, Order[].class);
         if (response != null) {
@@ -110,7 +114,7 @@ public class DataConnectorImpl implements DataConnector {
     public List<Order> getOrdersForRestaurant(int id) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "order/restaurant?id="+id);
+        URI uri = new URI(dataServiceUrl + "order/restaurant?id="+id);
 
         ResponseEntity<Order[]> response = restTemplate.getForEntity(uri, Order[].class);
         if (response != null) {
@@ -141,7 +145,7 @@ public class DataConnectorImpl implements DataConnector {
     public User login(UserRequest userRequest) throws URISyntaxException {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            URI uri = new URI(DATA_SERVICE_URL + "customer/login");
+            URI uri = new URI(dataServiceUrl + "customer/login");
             HttpEntity<UserRequest> request =
                     new HttpEntity<>(userRequest, headers);
             User result = restTemplate.postForObject(uri, request, User.class);
@@ -152,7 +156,7 @@ public class DataConnectorImpl implements DataConnector {
     public Customer createCustomer(CustomerRequest customerRequest) throws URISyntaxException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        URI uri = new URI(DATA_SERVICE_URL + "customer");
+        URI uri = new URI(dataServiceUrl + "customer");
         HttpEntity<CustomerRequest> request =
                 new HttpEntity<>(customerRequest, headers);
         Customer result = restTemplate.postForObject(uri, request, Customer.class);
