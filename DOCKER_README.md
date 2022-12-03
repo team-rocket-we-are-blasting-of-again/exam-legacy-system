@@ -21,3 +21,13 @@
 
 - type: string
 - description: Defines the jdbc connection string which is used to connect to postgres
+
+**DATA_SERVICE_POSTGRES_USERNAME**
+
+- type: string
+- description: Defines the username used to log in to postgres
+
+**DATA_SERVICE_POSTGRES_PASSWORD**
+
+- type: string
+- description: Defines the password used to log in to postgres
