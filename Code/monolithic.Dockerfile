@@ -12,7 +12,10 @@ FROM openjdk:8
 COPY --from=data_service /app/target/*.jar /data-service.jar
 COPY --from=main_entry /app/target/*.jar /main-entry.jar
 
+COPY start.sh /start.sh
+
 EXPOSE 9085
 EXPOSE 9080
 
-CMD ["java","-jar","/data-service.jar", "&&", "java", "-jar", "/main-entry.jar"]
+ENTRYPOINT [ "bash", "-c" ]
+CMD [ "/start.sh" ]
